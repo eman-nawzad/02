@@ -19,13 +19,13 @@ streamlit run app.py
 
 
 
-### 4. **`.gitignore`** (Git ignore file)
+### 1. **`.gitignore`** (Git ignore file)
 
 The `.gitignore` remains the same as before.
 
 
 
-### 5. **`SPI_12_2023.tif`** (GeoTIFF file)
+### 2. **`SPI_12_2023.tif`** (GeoTIFF file)
 
 Make sure your `SPI_12_2023.tif` file is placed in the root of the project. This file will be read and processed in the `app.py` script.
 
