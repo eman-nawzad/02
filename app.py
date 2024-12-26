@@ -1,45 +1,77 @@
 import streamlit as st
 import folium
-import geopandas as gpd
 import rasterio
-from rasterio.features import shapes
+from rasterio import features
+import geopandas as gpd
+from shapely.geometry import shape
 import json
-from folium import plugins
+from folium import raster_layers
 from io import BytesIO
 
-# Function to read GeoTIFF and convert to GeoJSON
-def geotiff_to_geojson(tiff_file):
-    with rasterio.open(tiff_file) as src:
-        image = src.read(1)  # Read the first band
-        mask = image != src.nodata
-        results = shapes(image, mask=mask, transform=src.transform)
+# Function to read the GeoTIFF file and convert it to GeoJSON
+def geotiff_to_geojson(tif_path):
+    # Open the GeoTIFF file
+    with rasterio.open(tif_path) as src:
+        # Read the data and metadata
+        image_data = src.read(1)
+        transform = src.transform
         
-        geoms = []
-        for geom, value in results:
-            geoms.append({
+        # Convert the raster to polygons (GeoJSON)
+        mask = image_data != src.nodata
+        shapes = features.shapes(image_data, mask=mask, transform=transform)
+        
+        # Convert shapes to GeoJSON format
+        geojson = {"type": "FeatureCollection", "features": []}
+        for shape, value in shapes:
+            feature = {
                 "type": "Feature",
-                "geometry": geom,
-                "properties": {"value": value}
-            })
-        
-        return {"type": "FeatureCollection", "features": geoms}
+                "geometry": shape.__geo_interface__,
+                "properties": {"value": value},
+            }
+            geojson["features"].append(feature)
+            
+    return geojson
 
-# Title for the app
-st.title("SPI Drought Monitoring")
+# Streamlit app layout
+st.title("SPI Drought Monitoring Application")
 
-# Path to the GeoTIFF file
-tiff_file_path = 'SPI_12_2023.tif'
+st.markdown(
+    """
+    This is a Streamlit-based application for visualizing and analyzing SPI (Standardized Precipitation Index) data.
+    The app uses a GeoTIFF file for SPI data and Folium for map visualizations.
+    """
+)
 
-# Convert the GeoTIFF to GeoJSON
-geojson_data = geotiff_to_geojson(tiff_file_path)
+# File upload widget for the GeoTIFF file
+tif_file = st.file_uploader("Upload the SPI GeoTIFF File", type=["tif", "tiff"])
 
-# Create a map centered around a specific location
-m = folium.Map(location=[35.5, 44.3], zoom_start=10)
+if tif_file is not None:
+    # Save the uploaded file temporarily
+    with open("SPI_12_2023.tif", "wb") as f:
+        f.write(tif_file.getbuffer())
+    
+    # Convert the uploaded GeoTIFF to GeoJSON
+    geojson_data = geotiff_to_geojson("SPI_12_2023.tif")
+    
+    # Create a Folium map centered around the area
+    folium_map = folium.Map(location=[0, 0], zoom_start=2, control_scale=True)
+    
+    # Add GeoJSON data to the map
+    folium.GeoJson(geojson_data).add_to(folium_map)
+    
+    # Render the Folium map in Streamlit
+    folium_map_html = folium_map._repr_html_()
+    st.components.v1.html(folium_map_html, height=600)
 
-# Add the GeoJSON to the map
-folium.GeoJson(geojson_data).add_to(m)
+    # Optionally, download the GeoJSON
+    geojson_str = json.dumps(geojson_data)
+    st.download_button(
+        label="Download GeoJSON",
+        data=geojson_str,
+        file_name="SPI_12_2023.geojson",
+        mime="application/geo+json",
+    )
 
-# Display the map in Streamlit
-from streamlit_folium import folium_static
-folium_static(m)
+else:
+    st.write("Please upload a GeoTIFF file to continue.")
 
