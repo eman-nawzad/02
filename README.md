@@ -7,8 +7,7 @@ This is a Streamlit-based application for visualizing and analyzing SPI (Standar
 - **SPI_12_2023.tif**: The raw SPI data in GeoTIFF format.
 - **app.py**: The main application script that displays the map and visualizations.
 - **requirements.txt**: Python dependencies required to run the app.
-- **assets/**: Folder containing logos and styles for the app.
-- **data/**: Folder containing processed SPI data in GeoJSON and raw SPI data in TIFF.
+
 
 ## Running the Application
 
@@ -24,15 +23,9 @@ streamlit run app.py
 
 The `.gitignore` remains the same as before.
 
-### 5. **`logo.png`** (Logo image)
 
-Your `logo.png` file remains in the `assets/` folder for branding purposes.
 
-### 6. **`styles.css`** (CSS for styling)
-
-Your `styles.css` can still be used to style the app, similar to the previous example.
-
-### 7. **`SPI_12_2023.tif`** (GeoTIFF file)
+### 5. **`SPI_12_2023.tif`** (GeoTIFF file)
 
 Make sure your `SPI_12_2023.tif` file is placed in the root of the project. This file will be read and processed in the `app.py` script.
 
