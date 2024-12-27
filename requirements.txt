@@ -1,2 +1,7 @@
+streamlit
+rasterio
+folium
+numpy
+streamlit-folium
 
 
