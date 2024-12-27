@@ -5,31 +5,25 @@ from rasterio import features
 import geopandas as gpd
 from shapely.geometry import shape
 import json
-from folium import raster_layers
 from io import BytesIO
 
 # Function to read the GeoTIFF file and convert it to GeoJSON
-def geotiff_to_geojson(tif_path):
-    # Open the GeoTIFF file
-    with rasterio.open(tif_path) as src:
-        # Read the data and metadata
+def geotiff_to_geojson(file_obj):
+    with rasterio.open(file_obj) as src:
         image_data = src.read(1)
         transform = src.transform
-        
-        # Convert the raster to polygons (GeoJSON)
-        mask = image_data != src.nodata
+        nodata_value = src.nodata if src.nodata is not None else 0
+        mask = image_data != nodata_value
         shapes = features.shapes(image_data, mask=mask, transform=transform)
-        
-        # Convert shapes to GeoJSON format
+
         geojson = {"type": "FeatureCollection", "features": []}
-        for shape, value in shapes:
+        for geom, value in shapes:
             feature = {
                 "type": "Feature",
-                "geometry": shape.__geo_interface__,
+                "geometry": shape(geom).__geo_interface__,
                 "properties": {"value": value},
             }
             geojson["features"].append(feature)
-            
     return geojson
 
 # Streamlit app layout
@@ -46,15 +40,18 @@ st.markdown(
 tif_file = st.file_uploader("Upload the SPI GeoTIFF File", type=["tif", "tiff"])
 
 if tif_file is not None:
-    # Save the uploaded file temporarily
-    with open("SPI_12_2023.tif", "wb") as f:
-        f.write(tif_file.getbuffer())
+    tif_file_buffer = BytesIO(tif_file.read())
     
     # Convert the uploaded GeoTIFF to GeoJSON
-    geojson_data = geotiff_to_geojson("SPI_12_2023.tif")
+    geojson_data = geotiff_to_geojson(tif_file_buffer)
+    
+    # Open the GeoTIFF file to determine the map center
+    with rasterio.open(tif_file_buffer) as src:
+        bounds = src.bounds
+        center = [(bounds.top + bounds.bottom) / 2, (bounds.left + bounds.right) / 2]
     
     # Create a Folium map centered around the area
-    folium_map = folium.Map(location=[0, 0], zoom_start=2, control_scale=True)
+    folium_map = folium.Map(location=center, zoom_start=10, control_scale=True)
     
     # Add GeoJSON data to the map
     folium.GeoJson(geojson_data).add_to(folium_map)
@@ -71,7 +68,7 @@ if tif_file is not None:
         file_name="SPI_12_2023.geojson",
         mime="application/geo+json",
     )
-
 else:
     st.write("Please upload a GeoTIFF file to continue.")
+
 
