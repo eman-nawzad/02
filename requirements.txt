@@ -1,6 +1,6 @@
 streamlit
 folium
-geopandas
 rasterio
-streamlit-folium
+geopandas
+shapely
 
