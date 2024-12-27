@@ -1,7 +1,6 @@
 import streamlit as st
 import rasterio
 import folium
-from folium.plugins import Colorbar
 from streamlit_folium import st_folium
 import numpy as np
 
