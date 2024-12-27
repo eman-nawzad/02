@@ -1,6 +1,2 @@
-streamlit
-folium
-rasterio
-geopandas
-shapely
+
 
