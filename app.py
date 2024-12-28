@@ -34,7 +34,7 @@ def index():
     return render_template('map.html')  # Render the saved map HTML
 
 if __name__ == '__main__':
-    app.run(debug=True)
-
+    # Run Flask without reloader and debug mode (this avoids the signal issue)
+    app.run(debug=False, use_reloader=False)
 
 
