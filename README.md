@@ -17,7 +17,7 @@ SPI_12_2023.tif
 app.py
 requirements.txt
 ```
-pip install folium streamlit-folium geopandas rasterio numpy matplotlib
+
 
 ## Setup Instructions
 
