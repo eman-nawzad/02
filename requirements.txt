@@ -1,5 +1,5 @@
-folium
+streamlit
 rasterio
+matplotlib
 numpy
-geopandas
 
