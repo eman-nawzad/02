@@ -11,10 +11,18 @@ from streamlit_folium import st_folium  # Import for Folium integration in Strea
 # App title
 st.title("Drought Monitoring Web Application with OpenStreetMap")
 
-# Sidebar for user input
-st.sidebar.header("Data Upload")
-spi_file = "SPI_12_2023.tif"  # SPI GeoTIFF file
-shapefile_option = st.sidebar.checkbox("Overlay vector data (GeoJSON/Shapefile)")
+# Sidebar header
+st.sidebar.header("Map Customization")
+
+# User controls in the sidebar
+map_zoom = st.sidebar.slider("Map Zoom Level", min_value=1, max_value=18, value=8)  # Control zoom level
+
+# Custom color picker for drought categories
+st.sidebar.subheader("Category Colors")
+extreme_color = st.sidebar.color_picker("Extreme Drought Color", "#FF0000")  # Default Red
+severe_color = st.sidebar.color_picker("Severe Drought Color", "#FF7F00")  # Default Orange
+moderate_color = st.sidebar.color_picker("Moderate Drought Color", "#FFFF00")  # Default Yellow
+mild_color = st.sidebar.color_picker("Mild Drought Color", "#7FFF00")  # Default Light Green
 
 # Load SPI GeoTIFF data
 @st.cache_data
@@ -45,6 +53,7 @@ def load_vector_data(vector_file):
     return gpd.read_file(vector_file)
 
 # Load SPI data
+spi_file = "SPI_12_2023.tif"  # SPI GeoTIFF file
 spi_data, bounds, profile = load_spi_data(spi_file)
 st.sidebar.write("SPI Data Loaded Successfully!")
 
@@ -54,14 +63,14 @@ normalized_spi = normalize_data(spi_data)
 # Create a folium map
 center_lat = (bounds.top + bounds.bottom) / 2
 center_lon = (bounds.left + bounds.right) / 2
-m = folium.Map(location=[center_lat, center_lon], zoom_start=8, tiles="OpenStreetMap")
+m = folium.Map(location=[center_lat, center_lon], zoom_start=map_zoom, tiles="OpenStreetMap")
 
-# Define custom colors for drought categories
+# Define custom colors for drought categories based on user input
 category_colors = {
-    "Extreme drought": "#FF0000",  # Red
-    "Severe drought": "#FF7F00",  # Orange
-    "Moderate drought": "#FFFF00",  # Yellow
-    "Mild drought": "#7FFF00",  # Light Green
+    "Extreme drought": extreme_color,
+    "Severe drought": severe_color,
+    "Moderate drought": moderate_color,
+    "Mild drought": mild_color,
 }
 
 # Apply custom colors to the map visualization
@@ -80,14 +89,6 @@ image_overlay.add_to(m)
 
 # Remove the black boundary (by setting `interactive` and `cross_origin` correctly)
 image_overlay.options.update({"interactive": True, "crossOrigin": True})
-
-# Add shapefile overlay if enabled
-if shapefile_option:
-    uploaded_vector_file = st.sidebar.file_uploader("Upload GeoJSON/Shapefile", type=["geojson", "shp", "zip"])
-    if uploaded_vector_file:
-        vector_data = load_vector_data(uploaded_vector_file)
-        folium.GeoJson(vector_data).add_to(m)
-        st.sidebar.write("Vector data overlaid!")
 
 # Add layer control
 folium.LayerControl().add_to(m)
@@ -108,7 +109,7 @@ st.markdown(legend, unsafe_allow_html=True)
 
 st.sidebar.info(
     """
-    - Ensure your GeoJSON/Shapefile matches the coordinate reference system (CRS) of the raster file.
+    - Customize the map zoom level and drought category colors.
     - The SPI map is visualized on top of an OpenStreetMap basemap.
     """
 )
