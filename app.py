@@ -16,6 +16,9 @@ st.sidebar.header("Data Upload")
 spi_file = "SPI_12_2023.tif"  # SPI GeoTIFF file
 shapefile_option = st.sidebar.checkbox("Overlay vector data (GeoJSON/Shapefile)")
 
+# Scale control
+scale_option = st.sidebar.checkbox("Enable Scale Control", value=True)
+
 # Load SPI GeoTIFF data
 @st.cache_data
 def load_spi_data(file):
@@ -64,8 +67,18 @@ image_overlay = ImageOverlay(
     image=rgba_data,
     bounds=[[bounds.bottom, bounds.left], [bounds.top, bounds.right]],
     opacity=0.6,
+    interactive=True,
+    cross_origin=True,
+    zindex=1,
 )
 image_overlay.add_to(m)
+
+# Remove the black boundary (by setting `interactive` and `cross_origin` correctly)
+image_overlay.options.update({"interactive": True, "crossOrigin": True})
+
+# Add scale control if enabled
+if scale_option:
+    folium.plugins.ScaleBar(position="bottomright").add_to(m)
 
 # Add shapefile overlay if enabled
 if shapefile_option:
@@ -98,6 +111,7 @@ st.sidebar.info(
     - The SPI map is visualized on top of an OpenStreetMap basemap.
     """
 )
+
 
 
 
