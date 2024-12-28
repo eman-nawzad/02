@@ -1,7 +1,6 @@
-streamlit
-rasterio
+Flask
 folium
-numpy
-streamlit-folium
+rasterio
+
 
 
