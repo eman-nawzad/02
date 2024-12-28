@@ -92,7 +92,7 @@ if shapefile_option:
 folium.LayerControl().add_to(m)
 
 # Display the map
-st.header("Interactive Map with OpenStreetMap Basemap")
+
 st_folium(m, width=800, height=500)
 
 # Add legend
