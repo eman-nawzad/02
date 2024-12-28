@@ -16,9 +16,6 @@ st.sidebar.header("Data Upload")
 spi_file = "SPI_12_2023.tif"  # SPI GeoTIFF file
 shapefile_option = st.sidebar.checkbox("Overlay vector data (GeoJSON/Shapefile)")
 
-# Scale control
-scale_option = st.sidebar.checkbox("Enable Scale Control", value=True)
-
 # Load SPI GeoTIFF data
 @st.cache_data
 def load_spi_data(file):
@@ -28,7 +25,7 @@ def load_spi_data(file):
         profile = src.profile  # Get metadata
     return data, bounds, profile
 
-# Categorize drought thresholds
+# Categorize drought thresholds with custom colors
 def categorize_drought(data):
     categories = np.empty_like(data, dtype=object)
     categories[data < -2.00] = "Extreme drought"
@@ -59,7 +56,15 @@ center_lat = (bounds.top + bounds.bottom) / 2
 center_lon = (bounds.left + bounds.right) / 2
 m = folium.Map(location=[center_lat, center_lon], zoom_start=8, tiles="OpenStreetMap")
 
-# Add SPI GeoTIFF as an overlay
+# Define custom colors for drought categories
+category_colors = {
+    "Extreme drought": "#FF0000",  # Red
+    "Severe drought": "#FF7F00",  # Orange
+    "Moderate drought": "#FFFF00",  # Yellow
+    "Mild drought": "#7FFF00",  # Light Green
+}
+
+# Apply custom colors to the map visualization
 colormap = cm.get_cmap("coolwarm")  # Use the same colormap as before
 rgba_data = colormap(normalized_spi)  # Apply colormap to normalized data
 rgba_data = (rgba_data[:, :, :3] * 255).astype(np.uint8)  # Convert to RGB format
@@ -76,10 +81,6 @@ image_overlay.add_to(m)
 # Remove the black boundary (by setting `interactive` and `cross_origin` correctly)
 image_overlay.options.update({"interactive": True, "crossOrigin": True})
 
-# Add scale control if enabled
-if scale_option:
-    folium.ScaleControl(position="bottomright").add_to(m)
-
 # Add shapefile overlay if enabled
 if shapefile_option:
     uploaded_vector_file = st.sidebar.file_uploader("Upload GeoJSON/Shapefile", type=["geojson", "shp", "zip"])
@@ -92,18 +93,18 @@ if shapefile_option:
 folium.LayerControl().add_to(m)
 
 # Display the map
-
+st.header("Interactive Map with OpenStreetMap Basemap")
 st_folium(m, width=800, height=500)
 
-# Add legend
-st.header("Drought Categories")
-legend = """
-- **Extreme drought**: Less than -2.00  
-- **Severe drought**: -1.50 to -1.99  
-- **Moderate drought**: -1.00 to -1.49  
-- **Mild drought**: -0.99 to -0.00  
+# Add legend for drought categories with custom colors
+st.header("Drought Categories Legend")
+legend = f"""
+- **Extreme drought**: Less than -2.00 (Color: <span style="color:{category_colors['Extreme drought']}">●</span>)  
+- **Severe drought**: -1.50 to -1.99 (Color: <span style="color:{category_colors['Severe drought']}">●</span>)  
+- **Moderate drought**: -1.00 to -1.49 (Color: <span style="color:{category_colors['Moderate drought']}">●</span>)  
+- **Mild drought**: -0.99 to 0.00 (Color: <span style="color:{category_colors['Mild drought']}">●</span>)  
 """
-st.markdown(legend)
+st.markdown(legend, unsafe_allow_html=True)
 
 st.sidebar.info(
     """
@@ -111,6 +112,7 @@ st.sidebar.info(
     - The SPI map is visualized on top of an OpenStreetMap basemap.
     """
 )
+
 
 
 
