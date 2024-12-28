@@ -31,7 +31,7 @@ def index():
     map_html = 'templates/map.html'  # Ensure the map is saved in a template folder
     m.save(map_html)
 
-    return render_template(map_html)  # Render the saved map HTML
+    return render_template('map.html')  # Render the saved map HTML
 
 if __name__ == '__main__':
     app.run(debug=True)
