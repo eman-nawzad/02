@@ -78,7 +78,7 @@ image_overlay.options.update({"interactive": True, "crossOrigin": True})
 
 # Add scale control if enabled
 if scale_option:
-    folium.plugins.ScaleBar(position="bottomright").add_to(m)
+    folium.ScaleControl(position="bottomright").add_to(m)
 
 # Add shapefile overlay if enabled
 if shapefile_option:
@@ -111,6 +111,7 @@ st.sidebar.info(
     - The SPI map is visualized on top of an OpenStreetMap basemap.
     """
 )
+
 
 
 
