@@ -1,38 +1,34 @@
-import streamlit as st
 import folium
 import rasterio
-from folium.raster_layers import ImageOverlay
+from folium import RasterLayer
+import numpy as np
 
-# Streamlit app title
-st.title("GeoTIFF with OpenStreetMap Overlay")
+# Open your GeoTIFF file
+with rasterio.open('your_geotiff_file.tif') as src:
+    # Get the bounding box of the raster
+    bounds = src.bounds
+    # Read the raster data
+    image = src.read(1)  # You can change this if your raster has multiple bands
 
-# Load your GeoTIFF file
-tif_file = 'SPI_12_2023.tif'
+# Create a folium map centered around the bounding box of the raster
+m = folium.Map(location=[(bounds[1] + bounds[3]) / 2, (bounds[0] + bounds[2]) / 2], zoom_start=12)
 
-# Read the GeoTIFF file using rasterio
-with rasterio.open(tif_file) as src:
-    img_data = src.read(1)  # Read image data (band 1)
-    bounds = src.bounds  # Get bounds of the GeoTIFF
-
-# Create a folium map centered around the bounds of your GeoTIFF
-m = folium.Map(location=[(bounds[1] + bounds[3]) / 2, (bounds[0] + bounds[2]) / 2], zoom_start=10)
-
-# Add OpenStreetMap as the base map (this is the default)
+# Add OpenStreetMap as a basemap
 folium.TileLayer('OpenStreetMap').add_to(m)
 
-# Add the GeoTIFF as an image overlay
-ImageOverlay(
-    image=img_data,
-    bounds=[[bounds[1], bounds[0]], [bounds[3], bounds[2]]],  # bottom-left and top-right
-    opacity=0.6,
-).add_to(m)
+# Convert the raster data to a format that folium can display
+raster_layer = folium.raster_layers.ImageOverlay(
+    image, 
+    bounds=[[bounds[1], bounds[0]], [bounds[3], bounds[2]]],
+    opacity=0.5
+)
 
-# Save the map to an HTML file
-map_html = 'map.html'
-m.save(map_html)
+# Add the raster layer to the map
+raster_layer.add_to(m)
 
-# Display the map using Streamlit's HTML component
-st.components.v1.html(open(map_html, 'r').read(), height=600, width=800)
+# Save the map to an HTML file or display
+m.save('map_with_raster_and_osm.html')
+
 
 
 
