@@ -1,40 +1,38 @@
+import streamlit as st
 import folium
 import rasterio
 from folium.raster_layers import ImageOverlay
-from flask import Flask, render_template
 
-# Initialize Flask app
-app = Flask(__name__)
+# Streamlit app title
+st.title("GeoTIFF with OpenStreetMap Overlay")
 
-@app.route('/')
-def index():
-    # Load your GeoTIFF file
-    tif_file = 'SPI_12_2023.tif'
-    with rasterio.open(tif_file) as src:
-        img_data = src.read(1)  # Read image data (band 1)
-        bounds = src.bounds  # Get bounds of the GeoTIFF
+# Load your GeoTIFF file
+tif_file = 'SPI_12_2023.tif'
 
-    # Create a folium map centered around the bounds of your GeoTIFF
-    m = folium.Map(location=[(bounds[1] + bounds[3]) / 2, (bounds[0] + bounds[2]) / 2], zoom_start=10)
+# Read the GeoTIFF file using rasterio
+with rasterio.open(tif_file) as src:
+    img_data = src.read(1)  # Read image data (band 1)
+    bounds = src.bounds  # Get bounds of the GeoTIFF
 
-    # Add OpenStreetMap as the base map (this is the default)
-    folium.TileLayer('OpenStreetMap').add_to(m)
+# Create a folium map centered around the bounds of your GeoTIFF
+m = folium.Map(location=[(bounds[1] + bounds[3]) / 2, (bounds[0] + bounds[2]) / 2], zoom_start=10)
 
-    # Add the GeoTIFF as an image overlay
-    ImageOverlay(
-        image=img_data,
-        bounds=[[bounds[1], bounds[0]], [bounds[3], bounds[2]]],  # bottom-left and top-right
-        opacity=0.6,
-    ).add_to(m)
+# Add OpenStreetMap as the base map (this is the default)
+folium.TileLayer('OpenStreetMap').add_to(m)
 
-    # Save the map to an HTML file
-    map_html = 'templates/map.html'  # Ensure the map is saved in a template folder
-    m.save(map_html)
+# Add the GeoTIFF as an image overlay
+ImageOverlay(
+    image=img_data,
+    bounds=[[bounds[1], bounds[0]], [bounds[3], bounds[2]]],  # bottom-left and top-right
+    opacity=0.6,
+).add_to(m)
 
-    return render_template('map.html')  # Render the saved map HTML
+# Save the map to an HTML file
+map_html = 'map.html'
+m.save(map_html)
 
-if __name__ == '__main__':
-    # Run Flask without reloader and debug mode (this avoids the signal issue)
-    app.run(debug=False, use_reloader=False)
+# Display the map using Streamlit's HTML component
+st.components.v1.html(open(map_html, 'r').read(), height=600, width=800)
+
 
 
