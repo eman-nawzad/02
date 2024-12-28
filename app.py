@@ -3,10 +3,10 @@ import geopandas as gpd
 import rasterio
 import folium
 from rasterio.mask import mask
-from folium import plugins
 from folium.raster_layers import ImageOverlay
 import numpy as np
 from matplotlib import cm
+from streamlit_folium import st_folium  # Import for Folium integration in Streamlit
 
 # App title
 st.title("Drought Monitoring Web Application with OpenStreetMap")
@@ -80,7 +80,7 @@ folium.LayerControl().add_to(m)
 
 # Display the map
 st.header("Interactive Map with OpenStreetMap Basemap")
-folium_static = st_folium(m, width=800, height=500)
+st_folium(m, width=800, height=500)
 
 # Add legend
 st.header("Drought Categories")
@@ -98,6 +98,7 @@ st.sidebar.info(
     - The SPI map is visualized on top of an OpenStreetMap basemap.
     """
 )
+
 
 
 
