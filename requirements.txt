@@ -1,6 +1,4 @@
-Flask
+streamlit
 folium
 rasterio
-
-
 
