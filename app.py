@@ -68,12 +68,7 @@ center_lat = (bounds.top + bounds.bottom) / 2
 center_lon = (bounds.left + bounds.right) / 2
 m = folium.Map(location=[center_lat, center_lon], zoom_start=map_zoom, tiles="OpenStreetMap")
 
-# Define custom colors for drought categories based on user input
-category_colors = {
-    "Extreme drought": extreme_color,
-    "Severe drought": severe_color,
-    "Moderate drought": moderate_color,
-    "Mild drought": mild_color,
+
 }
 
 # Apply custom colors to the map visualization
