@@ -104,7 +104,7 @@ st_folium(m, width=800, height=500)
 
 st.sidebar.info(
     """
-    - Customize the map zoom level and drought category colors.
+    - Customize the map zoom level 
     - The SPI map is visualized on top of an OpenStreetMap basemap.
     """
 )
