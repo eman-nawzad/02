@@ -69,7 +69,7 @@ center_lon = (bounds.left + bounds.right) / 2
 m = folium.Map(location=[center_lat, center_lon], zoom_start=map_zoom, tiles="OpenStreetMap")
 
 
-}
+
 
 # Apply custom colors to the map visualization
 colormap = cm.get_cmap("coolwarm")  # Use the same colormap as before
