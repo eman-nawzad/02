@@ -20,12 +20,6 @@ st.sidebar.markdown('<style> .css-1d391kg {width: 200px;}</style>', unsafe_allow
 # User controls in the sidebar
 map_zoom = st.sidebar.slider("Map Zoom Level", min_value=1, max_value=18, value=8)  # Control zoom level
 
-# Custom color picker for drought categories with shorter labels
-st.sidebar.subheader("Category Colors", anchor="category-colors")
-extreme_color = st.sidebar.color_picker("Ext. Drought", "#FF0000")  # Default Red
-severe_color = st.sidebar.color_picker("Sev. Drought", "#FF7F00")  # Default Orange
-moderate_color = st.sidebar.color_picker("Mod. Drought", "#FFFF00")  # Default Yellow
-mild_color = st.sidebar.color_picker("Mild Drought", "#7FFF00")  # Default Light Green
 
 # Load SPI GeoTIFF data
 @st.cache_data
