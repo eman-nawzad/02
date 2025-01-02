@@ -26,7 +26,7 @@ map_zoom = st.sidebar.slider("Map Zoom Level", min_value=1, max_value=18, value=
 def load_spi_data(file):
     with rasterio.open(file) as src:
         data = src.read(1)  # Read the first band
-       
+           bounds = src.bounds  # Get bounding box
         profile = src.profile  # Get metadata
     return data, bounds, profile
 
