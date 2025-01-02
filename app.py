@@ -100,15 +100,7 @@ folium.LayerControl().add_to(m)
 st.header("Interactive Map with OpenStreetMap Basemap")
 st_folium(m, width=800, height=500)
 
-# Add legend for drought categories with custom colors
-st.header("Drought Categories Legend")
-legend = f"""
-- **Extreme drought**: Less than -2.00 (Color: <span style="color:{category_colors['Extreme drought']}">●</span>)  
-- **Severe drought**: -1.50 to -1.99 (Color: <span style="color:{category_colors['Severe drought']}">●</span>)  
-- **Moderate drought**: -1.00 to -1.49 (Color: <span style="color:{category_colors['Moderate drought']}">●</span>)  
-- **Mild drought**: -0.99 to 0.00 (Color: <span style="color:{category_colors['Mild drought']}">●</span>)  
-"""
-st.markdown(legend, unsafe_allow_html=True)
+
 
 st.sidebar.info(
     """
