@@ -9,7 +9,7 @@ from matplotlib import cm
 from streamlit_folium import st_folium  # Import for Folium integration in Streamlit
 
 # App title
-st.title("Drought Monitoring Web Application with OpenStreetMap")
+st.title("Drought Monitoring Web Application ")
 
 # Sidebar header
 st.sidebar.header("Map Customization")
