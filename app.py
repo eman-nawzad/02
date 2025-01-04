@@ -82,28 +82,36 @@ image_overlay.add_to(m)
 # Add layer control
 folium.LayerControl().add_to(m)
 
-# Function to add legend
+# Function to add professional legend
 def add_legend(map_obj):
     legend_html = """
         <div style="position: fixed; 
-                    bottom: 50px; left: 10px; width: 200px; height: 160px; 
+                    bottom: 100px; left: 10px; width: 220px; height: auto; 
                     background-color: white; border:2px solid grey; 
-                    z-index:9999; font-size:14px;">
-            <div style="padding: 10px;">
-                <strong>SPI Legend</strong><br>
-                <i style="background: #67001f; width: 20px; height: 20px; display: inline-block; border-radius: 3px;"></i> Extreme Drought (-2.00)<br>
-                <i style="background: #f7f4f9; width: 20px; height: 20px; display: inline-block; border-radius: 3px;"></i> Mild Drought (0.00)<br>
-                <i style="background: #b2182b; width: 20px; height: 20px; display: inline-block; border-radius: 3px;"></i> Moderate Drought (-1.00 to -1.49)<br>
-                <i style="background: #fdae61; width: 20px; height: 20px; display: inline-block; border-radius: 3px;"></i> Severe Drought (-1.50 to -1.99)<br>
+                    border-radius: 10px; padding: 10px; font-size:14px; z-index: 9999; font-family: Arial, sans-serif;">
+            <strong style="font-size:16px;">SPI Legend</strong><br><br>
+            <div style="display: flex; align-items: center;">
+                <div style="width: 20px; height: 20px; background: #67001f; border-radius: 3px;"></div>
+                <span>&nbsp; Extreme Drought (-2.00)</span>
+            </div>
+            <div style="display: flex; align-items: center;">
+                <div style="width: 20px; height: 20px; background: #f7f4f9; border-radius: 3px;"></div>
+                <span>&nbsp; Mild Drought (0.00)</span>
+            </div>
+            <div style="display: flex; align-items: center;">
+                <div style="width: 20px; height: 20px; background: #b2182b; border-radius: 3px;"></div>
+                <span>&nbsp; Moderate Drought (-1.00 to -1.49)</span>
+            </div>
+            <div style="display: flex; align-items: center;">
+                <div style="width: 20px; height: 20px; background: #fdae61; border-radius: 3px;"></div>
+                <span>&nbsp; Severe Drought (-1.50 to -1.99)</span>
             </div>
         </div>
     """
-    legend = folium.Html(legend_html)
-    legend_icon = folium.Popup(legend, max_width=300)
-    folium.Marker([center_lat, center_lon], icon=folium.Icon(icon="info-sign")).add_to(map_obj)
-    folium.Marker([center_lat, center_lon], popup=legend_icon).add_to(map_obj)
+    legend = folium.Element(legend_html)
+    map_obj.get_root().html.add_child(legend)
 
-# Add the legend to the map
+# Add the professional legend to the map
 add_legend(m)
 
 # Display the map
