@@ -26,7 +26,8 @@ def load_spi_data(file):
     with rasterio.open(file) as src:
         data = src.read(1)  # Read the first band
         bounds = src.bounds  # Get bounding box
-    return data, bounds
+        profile = src.profile  # Get metadata
+    return data, bounds, profile
 
 # Normalize data for visualization
 def normalize_data(data):
@@ -34,8 +35,9 @@ def normalize_data(data):
     return (data - data_min) / (data_max - data_min)
 
 # Mask no-data values (assuming the black background is due to no-data values)
-def mask_no_data(profile, data):
-    no_data_value = profile.get('nodata')
+@st.cache_data
+def mask_no_data(_profile, data):  # Renamed '_profile' to prevent caching issues
+    no_data_value = _profile.get('nodata')
     if no_data_value is not None:
         data = np.ma.masked_equal(data, no_data_value)
     return data
@@ -47,21 +49,18 @@ def load_vector_data(vector_file):
 
 # Load SPI data
 spi_file = "SPI_12_2023.tif"  # SPI GeoTIFF file
-spi_data, bounds = load_spi_data(spi_file)
-
-# Load the profile separately to avoid caching issues
-with rasterio.open(spi_file) as src:
-    profile = src.profile
+spi_data, bounds, profile = load_spi_data(spi_file)
+st.sidebar.write("SPI Data Loaded Successfully!")
 
 # Mask the SPI data
-masked_spi = mask_no_data(profile, spi_data)
+masked_spi = mask_no_data(profile, spi_data)  # Pass 'profile' and 'data' separately
 
 # Normalize SPI data for display
 normalized_spi = normalize_data(masked_spi)
 
 # Create a folium map
-center_lat = (bounds[3] + bounds[1]) / 2
-center_lon = (bounds[0] + bounds[2]) / 2
+center_lat = (bounds.top + bounds.bottom) / 2
+center_lon = (bounds.left + bounds.right) / 2
 m = folium.Map(location=[center_lat, center_lon], zoom_start=map_zoom, tiles="OpenStreetMap")
 
 # Apply custom colors to the map visualization
@@ -72,7 +71,7 @@ rgba_data = (rgba_data[:, :, :3] * 255).astype(np.uint8)  # Convert to RGB forma
 # Image overlay for the map
 image_overlay = ImageOverlay(
     image=rgba_data,
-    bounds=[[bounds[1], bounds[0]], [bounds[3], bounds[2]]],
+    bounds=[[bounds.bottom, bounds.left], [bounds.top, bounds.right]],
     opacity=1,
     interactive=True,
     cross_origin=True,
@@ -94,6 +93,7 @@ st.sidebar.info(
     - The SPI map is visualized on top of an OpenStreetMap basemap.
     """
 )
+
 
 
 
