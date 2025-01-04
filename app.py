@@ -2,7 +2,6 @@ import streamlit as st
 import geopandas as gpd
 import rasterio
 import folium
-from rasterio.mask import mask
 from folium.raster_layers import ImageOverlay
 import numpy as np
 from matplotlib import cm
@@ -56,6 +55,7 @@ st.sidebar.write("SPI Data Loaded Successfully!")
 # Mask no-data values (assuming the black background is due to no-data values)
 no_data_value = profile.get('nodata')
 if no_data_value is not None:
+    # Create a masked array for the no-data values
     spi_data = np.ma.masked_equal(spi_data, no_data_value)
 
 # Normalize SPI data for display
@@ -69,7 +69,9 @@ m = folium.Map(location=[center_lat, center_lon], zoom_start=map_zoom, tiles="Op
 # Apply custom colors to the map visualization
 colormap = cm.get_cmap("coolwarm")  # Use the same colormap as before
 rgba_data = colormap(normalized_spi)  # Apply colormap to normalized data
-rgba_data = (rgba_data[:, :, :3] * 255).astype(np.uint8)  # Convert to RGB format
+
+# Convert to RGB format
+rgba_data = (rgba_data[:, :, :3] * 255).astype(np.uint8)
 
 # Explicitly set no-data values to transparent or white background (e.g., white as [255, 255, 255])
 rgba_data = np.ma.filled(rgba_data, fill_value=[255, 255, 255])  # Fill masked values with white
@@ -99,6 +101,7 @@ st.sidebar.info(
     - The SPI map is visualized on top of an OpenStreetMap basemap.
     """
 )
+
 
 
 
