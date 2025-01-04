@@ -48,7 +48,7 @@ def load_vector_data(vector_file):
     return gpd.read_file(vector_file)
 
 # Load SPI data
-spi_file = "SPI_12.tif"  # SPI GeoTIFF file
+spi_file = "SPI_12_2023.tif"  # SPI GeoTIFF file
 spi_data, bounds, profile = load_spi_data(spi_file)
 st.sidebar.write("SPI Data Loaded Successfully!")
 
@@ -82,6 +82,28 @@ image_overlay.add_to(m)
 # Add layer control
 folium.LayerControl().add_to(m)
 
+# Function to add legend
+def add_legend(map_obj):
+    legend_html = """
+        <div style="position: fixed; 
+                    bottom: 50px; left: 10px; width: 200px; height: 160px; 
+                    background-color: white; border:2px solid grey; 
+                    z-index:9999; font-size:14px;">
+            <div style="padding: 10px;">
+                <strong>SPI Legend</strong><br>
+                <i style="background: #67001f; width: 20px; height: 20px; display: inline-block; border-radius: 3px;"></i> Extreme Drought (-2.00)<br>
+                <i style="background: #f7f4f9; width: 20px; height: 20px; display: inline-block; border-radius: 3px;"></i> Mild Drought (0.00)<br>
+                <i style="background: #b2182b; width: 20px; height: 20px; display: inline-block; border-radius: 3px;"></i> Moderate Drought (-1.00 to -1.49)<br>
+                <i style="background: #fdae61; width: 20px; height: 20px; display: inline-block; border-radius: 3px;"></i> Severe Drought (-1.50 to -1.99)<br>
+            </div>
+        </div>
+    """
+    legend = folium.Element(legend_html)
+    map_obj.get_root().html.add_child(legend)
+
+# Add the legend to the map
+add_legend(m)
+
 # Display the map
 st.header("Interactive Map with OpenStreetMap Basemap")
 st_folium(m, width=800, height=500)
@@ -92,7 +114,7 @@ st.sidebar.info(
     - Customize the map zoom level 
     - The SPI map is visualized on top of an OpenStreetMap basemap.
     """
-) 
+)
 
 
 
