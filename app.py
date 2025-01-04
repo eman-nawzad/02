@@ -78,9 +78,42 @@ image_overlay.add_to(m)
 # Add layer control
 folium.LayerControl().add_to(m)
 
+# Function to add a legend
+def add_legend(map_obj):
+    legend_html = """
+        <div style="position: fixed; 
+                    bottom: 100px; left: 10px; width: 220px; height: auto; 
+                    background-color: white; border:2px solid grey; 
+                    border-radius: 10px; padding: 10px; font-size:14px; z-index: 9999; font-family: Arial, sans-serif;">
+            <strong style="font-size:16px;">SPI Legend</strong><br><br>
+            <div style="display: flex; align-items: center;">
+                <div style="width: 20px; height: 20px; background: #67001f; border-radius: 3px;"></div>
+                <span>&nbsp; Extreme Drought (-2.00)</span>
+            </div>
+            <div style="display: flex; align-items: center;">
+                <div style="width: 20px; height: 20px; background: #f7f4f9; border-radius: 3px;"></div>
+                <span>&nbsp; Mild Drought (0.00)</span>
+            </div>
+            <div style="display: flex; align-items: center;">
+                <div style="width: 20px; height: 20px; background: #b2182b; border-radius: 3px;"></div>
+                <span>&nbsp; Moderate Drought (-1.00 to -1.49)</span>
+            </div>
+            <div style="display: flex; align-items: center;">
+                <div style="width: 20px; height: 20px; background: #fdae61; border-radius: 3px;"></div>
+                <span>&nbsp; Severe Drought (-1.50 to -1.99)</span>
+            </div>
+        </div>
+    """
+    legend = folium.Element(legend_html)
+    map_obj.get_root().html.add_child(legend)
+
+# Add the legend to the map
+add_legend(m)
+
 # Display the map
 st.header("Interactive Map with OpenStreetMap Basemap")
 st_folium(m, width=800, height=500)
+
 
 
 
