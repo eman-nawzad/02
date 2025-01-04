@@ -82,6 +82,28 @@ image_overlay.add_to(m)
 # Add layer control
 folium.LayerControl().add_to(m)
 
+# Create the color legend for the map
+def add_legend(map_obj):
+    legend_html = """
+        <div style="position: fixed; 
+                    bottom: 10px; left: 10px; width: 160px; height: 130px; 
+                    background-color: white; border:2px solid grey; 
+                    z-index:9999; font-size:14px;">
+            <div style="padding: 10px;">
+                <strong>SPI Legend</strong><br>
+                <i style="background: #67001f; width: 20px; height: 20px; display: inline-block; border-radius: 3px;"></i> Extreme Drought (-2.00)<br>
+                <i style="background: #f7f4f9; width: 20px; height: 20px; display: inline-block; border-radius: 3px;"></i> Mild Drought (0.00)<br>
+                <i style="background: #b2182b; width: 20px; height: 20px; display: inline-block; border-radius: 3px;"></i> Moderate Drought (-1.00 to -1.49)<br>
+                <i style="background: #fdae61; width: 20px; height: 20px; display: inline-block; border-radius: 3px;"></i> Severe Drought (-1.50 to -1.99)<br>
+            </div>
+        </div>
+    """
+    legend = folium.Element(legend_html)
+    map_obj.get_root().html.add_child(legend)
+
+# Add the legend to the map
+add_legend(m)
+
 # Display the map
 st.header("Interactive Map with OpenStreetMap Basemap")
 st_folium(m, width=800, height=500)
@@ -93,6 +115,7 @@ st.sidebar.info(
     - The SPI map is visualized on top of an OpenStreetMap basemap.
     """
 )
+
 
 
 
