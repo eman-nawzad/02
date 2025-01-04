@@ -48,7 +48,7 @@ def load_vector_data(vector_file):
     return gpd.read_file(vector_file)
 
 # Load SPI data
-spi_file = "SPI_12_2023.tif"  # SPI GeoTIFF file
+spi_file = "SPI_12.tif"  # SPI GeoTIFF file
 spi_data, bounds, profile = load_spi_data(spi_file)
 st.sidebar.write("SPI Data Loaded Successfully!")
 
