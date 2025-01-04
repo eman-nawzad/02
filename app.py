@@ -1,9 +1,10 @@
 import streamlit as st
 import geopandas as gpd
 import rasterio
+from rasterio.mask import mask
 import folium
-from folium.raster_layers import ImageOverlay
 import numpy as np
+from folium.raster_layers import ImageOverlay
 from matplotlib import cm
 from streamlit_folium import st_folium  # Import for Folium integration in Streamlit
 
@@ -28,19 +29,18 @@ def load_spi_data(file):
         profile = src.profile  # Get metadata
     return data, bounds, profile
 
-# Categorize drought thresholds with custom colors
-def categorize_drought(data):
-    categories = np.empty_like(data, dtype=object)
-    categories[data < -2.00] = "Extreme drought"
-    categories[(data >= -1.99) & (data <= -1.50)] = "Severe drought"
-    categories[(data >= -1.49) & (data <= -1.00)] = "Moderate drought"
-    categories[(data >= -0.99) & (data <= 0.00)] = "Mild drought"
-    return categories
-
 # Normalize data for visualization
 def normalize_data(data):
     data_min, data_max = np.nanmin(data), np.nanmax(data)
     return (data - data_min) / (data_max - data_min)
+
+# Mask no-data values (assuming the black background is due to no-data values)
+@st.cache_data
+def mask_no_data(data, profile):
+    no_data_value = profile.get('nodata')
+    if no_data_value is not None:
+        data = np.ma.masked_equal(data, no_data_value)
+    return data
 
 # Load GeoJSON or Shapefile
 @st.cache_data
@@ -52,14 +52,11 @@ spi_file = "SPI_12_2023.tif"  # SPI GeoTIFF file
 spi_data, bounds, profile = load_spi_data(spi_file)
 st.sidebar.write("SPI Data Loaded Successfully!")
 
-# Mask no-data values (assuming the black background is due to no-data values)
-no_data_value = profile.get('nodata')
-if no_data_value is not None:
-    # Create a masked array for the no-data values
-    spi_data = np.ma.masked_equal(spi_data, no_data_value)
+# Mask the SPI data
+masked_spi = mask_no_data(spi_data, profile)
 
 # Normalize SPI data for display
-normalized_spi = normalize_data(spi_data)
+normalized_spi = normalize_data(masked_spi)
 
 # Create a folium map
 center_lat = (bounds.top + bounds.bottom) / 2
@@ -69,14 +66,9 @@ m = folium.Map(location=[center_lat, center_lon], zoom_start=map_zoom, tiles="Op
 # Apply custom colors to the map visualization
 colormap = cm.get_cmap("coolwarm")  # Use the same colormap as before
 rgba_data = colormap(normalized_spi)  # Apply colormap to normalized data
+rgba_data = (rgba_data[:, :, :3] * 255).astype(np.uint8)  # Convert to RGB format
 
-# Convert to RGB format
-rgba_data = (rgba_data[:, :, :3] * 255).astype(np.uint8)
-
-# Explicitly set no-data values to transparent or white background (e.g., white as [255, 255, 255])
-rgba_data = np.ma.filled(rgba_data, fill_value=[255, 255, 255])  # Fill masked values with white
-
-# ImageOverlay to add the SPI data as an image layer on top of the map
+# Image overlay for the map
 image_overlay = ImageOverlay(
     image=rgba_data,
     bounds=[[bounds.bottom, bounds.left], [bounds.top, bounds.right]],
@@ -94,13 +86,14 @@ folium.LayerControl().add_to(m)
 st.header("Interactive Map with OpenStreetMap Basemap")
 st_folium(m, width=800, height=500)
 
-# Sidebar info
+# Sidebar information
 st.sidebar.info(
     """
-    - Customize the map zoom level
+    - Customize the map zoom level 
     - The SPI map is visualized on top of an OpenStreetMap basemap.
     """
 )
+
 
 
 
