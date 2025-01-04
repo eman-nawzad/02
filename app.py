@@ -82,11 +82,11 @@ image_overlay.add_to(m)
 # Add layer control
 folium.LayerControl().add_to(m)
 
-# Create the color legend for the map
+# Function to add legend
 def add_legend(map_obj):
     legend_html = """
         <div style="position: fixed; 
-                    bottom: 10px; left: 10px; width: 160px; height: 130px; 
+                    bottom: 50px; left: 10px; width: 200px; height: 160px; 
                     background-color: white; border:2px solid grey; 
                     z-index:9999; font-size:14px;">
             <div style="padding: 10px;">
@@ -115,6 +115,7 @@ st.sidebar.info(
     - The SPI map is visualized on top of an OpenStreetMap basemap.
     """
 )
+
 
 
 
