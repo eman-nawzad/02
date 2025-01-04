@@ -2,7 +2,6 @@ import streamlit as st
 import geopandas as gpd
 import rasterio
 import folium
-from rasterio.mask import mask
 from folium.raster_layers import ImageOverlay
 import numpy as np
 from matplotlib import cm
@@ -56,6 +55,7 @@ st.sidebar.write("SPI Data Loaded Successfully!")
 # Mask no-data values (assuming the black background is due to no-data values)
 no_data_value = profile.get('nodata')
 if no_data_value is not None:
+    # Create a masked array for the no-data values
     spi_data = np.ma.masked_equal(spi_data, no_data_value)
 
 # Normalize SPI data for display
