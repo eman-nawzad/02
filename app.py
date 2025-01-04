@@ -36,8 +36,8 @@ def normalize_data(data):
 
 # Mask no-data values (assuming the black background is due to no-data values)
 @st.cache_data
-def mask_no_data(data, profile):
-    no_data_value = profile.get('nodata')
+def mask_no_data(_profile, data):  # Renamed '_profile' to prevent caching issues
+    no_data_value = _profile.get('nodata')
     if no_data_value is not None:
         data = np.ma.masked_equal(data, no_data_value)
     return data
@@ -53,7 +53,7 @@ spi_data, bounds, profile = load_spi_data(spi_file)
 st.sidebar.write("SPI Data Loaded Successfully!")
 
 # Mask the SPI data
-masked_spi = mask_no_data(spi_data, profile)
+masked_spi = mask_no_data(profile, spi_data)  # Pass 'profile' and 'data' separately
 
 # Normalize SPI data for display
 normalized_spi = normalize_data(masked_spi)
