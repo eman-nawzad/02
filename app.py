@@ -71,6 +71,9 @@ colormap = cm.get_cmap("coolwarm")  # Use the same colormap as before
 rgba_data = colormap(normalized_spi)  # Apply colormap to normalized data
 rgba_data = (rgba_data[:, :, :3] * 255).astype(np.uint8)  # Convert to RGB format
 
+# Explicitly set no-data values to transparent or white background (e.g., white as [255, 255, 255])
+rgba_data = np.ma.filled(rgba_data, fill_value=[255, 255, 255])  # Fill masked values with white
+
 # ImageOverlay to add the SPI data as an image layer on top of the map
 image_overlay = ImageOverlay(
     image=rgba_data,
@@ -96,6 +99,7 @@ st.sidebar.info(
     - The SPI map is visualized on top of an OpenStreetMap basemap.
     """
 )
+
 
 
 
