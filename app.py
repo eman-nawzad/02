@@ -98,8 +98,10 @@ def add_legend(map_obj):
             </div>
         </div>
     """
-    legend = folium.Element(legend_html)
-    map_obj.get_root().html.add_child(legend)
+    legend = folium.Html(legend_html)
+    legend_icon = folium.Popup(legend, max_width=300)
+    folium.Marker([center_lat, center_lon], icon=folium.Icon(icon="info-sign")).add_to(map_obj)
+    folium.Marker([center_lat, center_lon], popup=legend_icon).add_to(map_obj)
 
 # Add the legend to the map
 add_legend(m)
@@ -115,6 +117,7 @@ st.sidebar.info(
     - The SPI map is visualized on top of an OpenStreetMap basemap.
     """
 )
+
 
 
 
